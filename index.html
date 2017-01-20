@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>BerryApp</title>
+<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+ 
+<script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
+<script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+<link rel='stylesheet' type='text/css' href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+<script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
+<script src='./berryApp.js'></script>
+<!-- // <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> -->
+ 
+ 
+</head>
+<body style="margin-top:20px">
+<div class="container"><div class="row"><div class="col-md-12" id="app"></div></div>
+ 
+</div>
+<script>
+ 
+ 
+config = {"template": "[{\"name\":\"main\",\"content\":\"<div class=\\\"btn btn-info\\\">Refresh Button!</div>\\n<div>{{options.mytext}}</div>\\n<div class=\\\"btn btn-danger\\\">Redraw Increment Counter</div>\\n<div><strong>Counter:</strong> {{counter}}</div>\\n<div class=\\\"btn btn-warning\\\">Who Am I?</div>\\n<div><strong>Who Am I?</strong> {{whoami.user}}</div>\\n<div>\\n    <input id=\\\"post-echo-input\\\" type=\\\"text\\\" />\\n    <div class=\\\"btn btn-success post-echo\\\">POST Echo</div>\\n</div>\\n<div>\\n    <strong>POST Response:</strong> {{echo.POST.result}}\\n</div>\\n<div>\\n    <input id=\\\"get-echo-input\\\" type=\\\"text\\\" />\\n    <div class=\\\"btn btn-success get-echo\\\">GET Echo</div>\\n</div>\\n<div>\\n<strong>GET Response:</strong> {{echo.GET.result}}\\n</div>\\n<div>{{>Test}}</div>\\n\"},{\"name\":\"Test\",\"content\":\"<div>\\n    <b>Hello</b>    \\n <div class=\\\"btn btn-success updateDirect\\\">UpdateDirect</div>\\n</div>\\n\"}]",
+ 
+"script": "[{\"name\":\"main\",\"content\":\"\\nthis.data.counter = 1;\\nthis.data.echo = {};\\nthis.callback = function() {\\n    this.app.on('hello',function(){\\n        console.log('stuff');\\n    })\\n    this.app.click('.btn-info', function() {\\n        this.app.refresh();\\n    })\\n    this.app.click('.btn-danger', function() {\\n        this.data.counter++;\\n        this.app.update();\\n    })\\n    this.app.click('.btn-warning',function() {\\n        this.app.get('whoami',{},function(response){\\n            this.data.whoami = response;\\n            this.app.update();\\n        })\\n    })\\n    this.app.click('.post-echo',function() {\\n        this.app.post('echo',{'result':this.$el.find('#post-echo-input').val()},function(response){\\n            this.data.echo.POST = response.POST;\\n            this.app.update();\\n        })\\n    })\\n    this.app.click('.get-echo',function() {\\n        this.app.get('echo',{'result':this.$el.find('#get-echo-input').val()},function(response){\\n            this.app.update({echo:{GET:response.GET}});\\n        })\\n    })\\n    this.app.click('.updateDirect', function(){\\n        this.data.counter = 100;//.set({counter:100});\\n        this.app.redraw();\\n        \\n    })\\n}\"},{\"name\":\"asdfasf\",\"content\":\"var hello = false;\"}]",
+"sources": [
+{
+"name": "whoami"
+},
+{
+"name": "echo"
+}
+]
+};
+var opts = {
+$el: $('#app'),
+data: {
+'whoami': {user:'otherguy'}
+},
+config: config,
+crud: function(name, data, callback, verb){
+returnData = '';
+switch(name){
+case 'whoami':
+returnData = {"user":"person"};
+break
+case 'echo':
+returnData = {};
+returnData[verb.toUpperCase()] = data;
+break
+}
+callback(returnData);
+console.log(verb)
+}
+}
+ 
+ 
+ 
+ 
+ 
+bae = new berryAppEngine(opts);
+ 
+var refetch = function(data){
+bae.destroy();
+delete bae;
+bae = new berryAppEngine(opts);
+bae.app.on('refetch', refetch) 
+console.log('fetch')
+}
+bae.app.on('refetch', refetch) 
+ 
+ 
+</script>
+</body>
+</html>
