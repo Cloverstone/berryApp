@@ -8,7 +8,7 @@ function App() {
 					modal({title: "ERROR",content: data.error, modal:{header_class:"bg-danger"}});
 				}
 			}else{
-			console.log(data);
+				console.log(data);
 			}
 		};
 		(this.options[verb] || _.partial(this.options.crud, _, _, _, verb) || function(){}).call(this, name, data, callback.bind(this))
@@ -34,10 +34,8 @@ function App() {
 	function click(selector, callback){
 		this.$el.find(selector).on('click', callback.bind(this));
 	}
-	
 	this.events = {initialize: []};
 	this.addSub = Berry.prototype.addSub;
- 
  
 	return {
 		post:_.partial(router, 'post').bind(this),
@@ -109,12 +107,11 @@ berryAppEngine = function(options) {
       }) 
     }
   }
-    this.destroy = function(){
-        this.view.teardown();
-    }
-    this.options = $.extend(true, {}, options);
-    this.options.initializer = this.options.initializer || 'callback'
-    this.config = this.options.config;
-    this.load();
+	this.destroy = function(){
+			this.view.teardown();
+	}
+	this.options = $.extend(true, {}, options);
+	this.options.initializer = this.options.initializer || 'callback'
+	this.config = this.options.config;
+	this.load();
 }
- 
